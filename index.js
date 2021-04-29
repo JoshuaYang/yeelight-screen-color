@@ -6,32 +6,26 @@ const Jimp = require('jimp')
 const Yeelight = require('yeelight2')
 
 const imgPath = resolve(process.cwd(), 'screenshot.jpg')
-let currentLight
+
+const light = new Yeelight('192.168.3.97')
 
 async function run() {
   await screenshot({ filename: imgPath })
 
   const image = await Jimp.read(imgPath)
-  // await image.resize(500, Jimp.AUTO)
-  await image.quality(10)
+  await image.resize(200, Jimp.AUTO)
+  // await image.quality(8)
   await image.writeAsync(imgPath)
 
   const rgbArray = await ColorThief.getColor(imgPath)
   const color = Color.rgb(rgbArray)
+  const rgbNumber = color.rgbNumber()
 
-  console.log(color.rgbNumber())
+  console.log(rgbNumber)
 
-  // currentLight.set_rgb(color.rgbNumber(), 'smooth', 500)
+  light.set_rgb(rgbNumber)
 
-  setTimeout(run, 1500)
+  run()
 }
 
 run()
-
-// Yeelight.discover((light) => {
-//   console.log('==== light ====', light)
-
-//   currentLight = light
-
-//   run()
-// })
